@@ -32,5 +32,8 @@ msg.attach(img)
 
 # Send the email via our own SMTP server.
 s = smtplib.SMTP(SMTP)
+s.starttls()
+s.login(email, password)
+
 s.sendmail(me, destination, msg.as_string())
 s.quit()
