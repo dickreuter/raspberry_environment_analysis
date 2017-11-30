@@ -23,7 +23,7 @@ class MongoManager(object):
                                  find({'timestamp': {'$gt': start_today, '$lt': end_today}}).
                                  limit(max_rows)))
         data_yesterday = pd.DataFrame(list(input_data.
-                                 find({'timestamp': {'$gt': start_today, '$lt': end_today}}).
+                                 find({'timestamp': {'$gt': start_yesterday, '$lt': end_yesterday}}).
                                  limit(max_rows)))
 
         data_today = data_today[data_today['temperature'] > 0][['timestamp', 'temperature']]
