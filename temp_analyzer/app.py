@@ -2,24 +2,22 @@ import datetime
 
 import matplotlib.pyplot as plt
 import pandas as pd
-
 from temp_analyzer.mongo_manager import MongoManager
 
 
 def get_temp():
     m = MongoManager()
-    df, df2 = m.get_temp_df()
-    df.index = df['timestamp']
-    df2.index = df2['timestamp']
-    del df['timestamp'], df2['timestamp']
-    df.columns = ['Temperature1']
-    df2.columns = ['Temperature2']
-    ax = df.plot()
-    df2.plot(ax=ax)
-    plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-               ncol=2, mode="expand", borderaxespad=0.)
-    plt.savefig('temp_charts.jpg')
-    plt.show()
+    df_today, df_yesterday = m.get_temp_df()
+    df_today['day'] = 'today'
+    df_yesterday['day'] = 'yesterday'
+    df = pd.concat([df_today, df_yesterday])
+    df['timestamp'] = df['timestamp'].astype(str).str[0:2]
+    df = df.set_index(['timestamp', 'port', 'day'])
+    df = df.unstack(-1).unstack(-1)
+    df.columns = ['today sensor 1', 'today sensor 2', 'yesterday sensor 1', 'yesterday sensor 2']
+    fig=df.plot()
+    fig.get_figure().savefig('temp_charts.jpg')
+    fig.show()
 
 if __name__ == '__main__':
     get_temp()

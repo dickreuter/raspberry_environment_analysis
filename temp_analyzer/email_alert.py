@@ -1,10 +1,9 @@
-
 me = email = '6thFloorTemperature@gmx.com'
 password = '6thFloorTemp'
 
 POP3 = 'pop.gmx.com'
 SMTP = 'mail.gmx.com'
-destination = 'Nicolas.Dickreuter@barcap.com, Claudio.Nucera@barcap.com'
+destination = """<Nicolas.Dickreuter@barcap.com>;<dickreuter@gmail.com>"""
 
 import smtplib
 
@@ -22,7 +21,6 @@ msg['Subject'] = 'Temperature report'
 msg['From'] = email
 msg['To'] = COMMASPACE.join(destination)
 msg.preamble = 'Temperature report'
-
 
 file = 'temp_charts.jpg'
 fp = open(file, 'rb')
