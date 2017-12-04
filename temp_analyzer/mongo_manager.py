@@ -14,9 +14,9 @@ class MongoManager(object):
         self.mongodb = self.mongoclient.raspberry
 
     def get_temp_df(self, max_rows=0):
-        start_today = datetime.combine(date.today(), time(9))
+        start_today = datetime.combine(date.today(), time(8))
         end_today = datetime.combine(date.today(), time(20))
-        start_yesterday = datetime.combine(date.today() - timedelta(1), time(9))
+        start_yesterday = datetime.combine(date.today() - timedelta(1), time(8))
         end_yesterday = datetime.combine(date.today() - timedelta(1), time(20))
         input_data = self.mongodb.temperatures
         data_today = pd.DataFrame(list(input_data.

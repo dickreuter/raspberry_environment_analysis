@@ -15,9 +15,10 @@ def get_temp():
     df = df.set_index(['timestamp', 'port', 'day'])
     df = df.unstack(-1).unstack(-1)
     df.columns = ['today sensor 1', 'today sensor 2', 'yesterday sensor 1', 'yesterday sensor 2']
-    fig=df.plot()
+    fig = df.plot()
     fig.get_figure().savefig('temp_charts.jpg')
-    fig.show()
+    plt.show()
+
 
 if __name__ == '__main__':
     get_temp()
