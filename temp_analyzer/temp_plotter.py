@@ -1,7 +1,6 @@
-import datetime
-
 import matplotlib.pyplot as plt
 import pandas as pd
+
 from temp_analyzer.mongo_manager import MongoManager
 
 
@@ -16,8 +15,9 @@ def get_temp():
     df = df.unstack(-1).unstack(-1)
     df.columns = ['today sensor 1', 'today sensor 2', 'yesterday sensor 1', 'yesterday sensor 2']
     fig = df.plot()
-    fig.get_figure().savefig('temp_charts.jpg')
-    plt.show()
+    fig.get_figure().savefig('chart.jpg')
+    # plt.show()
+    return df
 
 
 if __name__ == '__main__':

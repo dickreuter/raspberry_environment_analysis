@@ -1,37 +1,75 @@
+import smtplib
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import numpy as np
+
+from temp_analyzer.temp_plotter import get_temp
+
+threshold_max = 26
+threshold_min = 22
 me = email = '6thFloorTemperature@gmx.com'
 password = '6thFloorTemp'
 
 POP3 = 'pop.gmx.com'
 SMTP = 'mail.gmx.com'
-destination = """<Nicolas.Dickreuter@barcap.com>;<dickreuter@gmail.com>"""
+destination = [
+    'nicolas.dickreuter@barclays.com',
 
-import smtplib
+]
 
-# Here are the email package modules we'll need
-from email.mime.image import MIMEImage
-from email.mime.multipart import MIMEMultipart
 
-COMMASPACE = ', '
+# 'claudio.nucera@barclays.com',
+# 'alan.james@barclays.com',
+# 'dimitris.kehagias@barclays.com',
+# 'dionisis.gonos@barclays.com',
 
-# Create the container (outer) email message.
-msg = MIMEMultipart()
-msg['Subject'] = 'Temperature report'
-# me == the sender's email address
-# family = the list of all recipients' email addresses
-msg['From'] = email
-msg['To'] = COMMASPACE.join(destination)
-msg.preamble = 'Temperature report'
 
-file = 'temp_charts.jpg'
-fp = open(file, 'rb')
-img = MIMEImage(fp.read())
-fp.close()
-msg.attach(img)
+def send_mail():
+    # Create the container (outer) email message.
+    msg = MIMEMultipart()
+    msg['Subject'] = 'Temperature report 6th floor'
+    # me == the sender's email address
+    # family = the list of all recipients' email addresses
+    msg['From'] = email
+    msg['To'] = ','.join(destination)
+    msg.preamble = 'Temperature report'
 
-# Send the email via our own SMTP server.
-s = smtplib.SMTP(SMTP)
-s.starttls()
-s.login(email, password)
+    # We reference the image in the IMG SRC attribute by the ID we give it below
+    msgText = MIMEText('Please find attached the latest temperature report..'
+                       'Please open the attached file.<br><br>'
+                       'Today max: {} C'
+                       '<br>Today min: {} C'.format("%.2f" % max_val, "%.2f" % min_val),
+                       'html')
+    msg.attach(msgText)
 
-s.sendmail(me, destination, msg.as_string())
-s.quit()
+    # This example assumes the image is in the current directory
+    fp = open('chart.jpg', 'rb')
+    msgImage = MIMEImage(fp.read())
+    fp.close()
+
+    # Define the image's ID as referenced above
+
+    msg.attach(msgImage)
+
+    # Send the email via our own SMTP server.
+    s = smtplib.SMTP(SMTP)
+    s.starttls()
+    s.login(email, password)
+
+    s.sendmail(me, destination, msg.as_string())
+    s.quit()
+
+
+if __name__ == '__main__':
+    df = get_temp()
+    max_val = np.nanmax(df[['today sensor 1', 'today sensor 2']].values)
+    min_val = np.nanmin(df[['today sensor 1', 'today sensor 2']].values)
+    last_vals = df[['today sensor 1', 'today sensor 2']].dropna()[-1:].values
+    if np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min:
+        print('Sending...')
+        send_mail()
+
+    else:
+        print('Not above hreshold.')
