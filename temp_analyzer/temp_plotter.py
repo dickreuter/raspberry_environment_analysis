@@ -1,8 +1,8 @@
 import matplotlib
-import matplotlib.pyplot as plt
+matplotlib.use('Agg')
 import pandas as pd
 
-matplotlib.use('Agg')
+
 
 from temp_analyzer.mongo_manager import MongoManager
 
