@@ -1,9 +1,21 @@
+"""
+Usage:
+  email_alert.py [Options]
+
+Options:
+  -a --all      send to all
+  -f --force    always send
+  -h --help     Show this screen.
+
+"""
+
 import smtplib
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 import numpy as np
+from docopt import docopt
 
 from temp_analyzer.temp_plotter import get_temp
 
@@ -14,19 +26,23 @@ password = '6thFloorTemp'
 
 POP3 = 'pop.gmx.com'
 SMTP = 'mail.gmx.com'
-destination = [
-    'nicolas.dickreuter@barclays.com',
-
-]
 
 
-# 'claudio.nucera@barclays.com',
-# 'alan.james@barclays.com',
-# 'dimitris.kehagias@barclays.com',
-# 'dionisis.gonos@barclays.com',
+def send_mail(args):
+    destination = [
+        'nicolas.dickreuter@barclays.com',
+    ]
 
+    if args['--all']:
+        destination.extend(
+            [
+                'claudio.nucera@barclays.com',
+                'alan.james@barclays.com',
+                'dimitris.kehagias@barclays.com',
+                'dionisis.gonos@barclays.com',
+            ]
+        )
 
-def send_mail():
     # Create the container (outer) email message.
     msg = MIMEMultipart()
     msg['Subject'] = 'Temperature report 6th floor'
@@ -63,13 +79,16 @@ def send_mail():
 
 
 if __name__ == '__main__':
+    args = docopt(__doc__)
+
     df = get_temp()
     max_val = np.nanmax(df[['today sensor 1', 'today sensor 2']].values)
     min_val = np.nanmin(df[['today sensor 1', 'today sensor 2']].values)
     last_vals = df[['today sensor 1', 'today sensor 2']].dropna()[-1:].values
-    if np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min:
+
+    if np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min or args['--force']:
         print('Sending...')
-        send_mail()
+        send_mail(args)
 
     else:
-        print('Not above hreshold.')
+      print('Not above hreshold.')
