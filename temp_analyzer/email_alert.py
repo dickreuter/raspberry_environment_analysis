@@ -1,11 +1,11 @@
 """
 Usage:
-  email_alert.py [Options]
+  email_alert.py [options]
 
 Options:
-  -a --all      send to all
-  -f --force    always send
-  -h --help     Show this screen.
+  -a,--all      send to all
+  -f, --force    always send
+  -h, --help     Show this screen.
 
 """
 
@@ -91,4 +91,4 @@ if __name__ == '__main__':
         send_mail(args)
 
     else:
-      print('Not above hreshold.')
+      print('Not above threshold.')
