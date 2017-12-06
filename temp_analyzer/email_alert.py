@@ -39,7 +39,10 @@ def send_mail(args):
                 'claudio.nucera@barclays.com',
                 'alan.james@barclays.com',
                 'dimitris.kehagias@barclays.com',
-                'dionisis.gonos@barclays.com',
+                'dionisis:s.gonos@barclays.com',
+                'Nora.bellavics@barclays.com',
+                'Lynda.cairns@barclays.com'
+
             ]
         )
 
