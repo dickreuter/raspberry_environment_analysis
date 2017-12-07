@@ -1,6 +1,6 @@
 """
 Usage:
-  email_alert.py [options]
+  email_alert.py LIMIT [options]
 
 Options:
   -a,--all      send to all
@@ -18,9 +18,6 @@ import numpy as np
 from docopt import docopt
 
 from temp_analyzer.temp_plotter import get_temp
-
-threshold_max = 26
-threshold_min = 22.5
 
 me = email = '6thFloorTemperature@gmx.com'
 password = '6thFloorTemp'
@@ -90,6 +87,8 @@ def send_mail(args, alert):
 
 if __name__ == '__main__':
     args = docopt(__doc__)
+    threshold_max = float(args['LIMIT'])
+    threshold_min = 22.5
 
     df = get_temp()
     max_val = np.nanmax(df[['today sensor 1', 'today sensor 2']].values)
