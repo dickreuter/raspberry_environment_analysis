@@ -45,7 +45,7 @@ def send_mail(args, alert):
                 'Lynda.cairns@barclays.com',
                 'richard.jefferies@barclays.com',
                 'jeff.x.wood@barclays.com',
-                'sergey.kurshev@barclays.com'
+                'sergey.kurshev@barclays.com',
                 'fotios.amaxopoulos@barclays.com'
             ]
         )
