@@ -20,7 +20,8 @@ from docopt import docopt
 from temp_analyzer.temp_plotter import get_temp
 
 threshold_max = 26
-threshold_min = 22
+threshold_min = 22.5
+
 me = email = '6thFloorTemperature@gmx.com'
 password = '6thFloorTemp'
 
@@ -28,7 +29,7 @@ POP3 = 'pop.gmx.com'
 SMTP = 'mail.gmx.com'
 
 
-def send_mail(args):
+def send_mail(args, alert):
     destination = [
         'nicolas.dickreuter@barclays.com',
     ]
@@ -37,17 +38,24 @@ def send_mail(args):
         destination.extend(
             [
                 'claudio.nucera@barclays.com',
-                'alan.james@barclays.com',
+                'alan.j.james@barclays.com',
                 'dimitris.kehagias@barclays.com',
                 'dionisis.gonos@barclays.com',
                 'Nora.bellavics@barclays.com',
-                'Lynda.cairns@barclays.com'
+                'Lynda.cairns@barclays.com',
+                'richard.jefferies@barclays.com',
+                'jeff.x.wood@barclays.com',
+                'sergey.kurshev@barclays.com'
+                'fotios.amaxopoulos@barclays.com'
             ]
         )
 
     # Create the container (outer) email message.
     msg = MIMEMultipart()
-    msg['Subject'] = 'Temperature report 6th floor'
+    if alert:
+        msg['Subject'] = 'Temperature ALERT 6th floor - action required'
+    else:
+        msg['Subject'] = 'Temperature report 6th floor'
     # me == the sender's email address
     # family = the list of all recipients' email addresses
     msg['From'] = email
@@ -88,9 +96,11 @@ if __name__ == '__main__':
     min_val = np.nanmin(df[['today sensor 1', 'today sensor 2']].values)
     last_vals = df[['today sensor 1', 'today sensor 2']].dropna()[-1:].values
 
-    if np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min or args['--force']:
+    alert = np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min
+
+    if alert or args['--force']:
         print('Sending...')
-        send_mail(args)
+        send_mail(args, alert)
 
     else:
-      print('Not above threshold.')
+        print('Not above threshold.')
