@@ -88,7 +88,7 @@ def send_mail(args, alert):
 if __name__ == '__main__':
     args = docopt(__doc__)
     threshold_max = float(args['LIMIT'])
-    threshold_min = 22.5
+    threshold_min = 22
 
     df = get_temp()
     max_val = np.nanmax(df[['today sensor 1', 'today sensor 2']].values)
