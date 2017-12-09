@@ -17,9 +17,12 @@ def get_temp():
     df = df.set_index(['timestamp', 'port', 'day'])
     df = df.unstack(-1).unstack(-1)
     df.columns = ['today sensor 1', 'today sensor 2', 'yesterday sensor 1', 'yesterday sensor 2']
-    fig = df.plot()
-    fig.get_figure().savefig('chart.jpg')
-    # plt.show()
+    ax = df.plot(style = ['bs-','ro-','b:','r:'])
+    ax.set_title('Temperatures 6th Floor 5NC')
+    ax.set_ylabel('Celsius')
+    ax.set_xlabel('Time')
+
+    ax.get_figure().savefig('chart.jpg')
     return df
 
 
