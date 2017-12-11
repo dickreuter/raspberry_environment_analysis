@@ -7,7 +7,7 @@ import pandas as pd
 from temp_analyzer.mongo_manager import MongoManager
 
 
-def get_temp():
+def get_temp(max_limit):
     m = MongoManager()
     df_today, df_yesterday = m.get_temp_df()
     df_today['day'] = 'today'
@@ -17,14 +17,15 @@ def get_temp():
     df = df.set_index(['timestamp', 'port', 'day'])
     df = df.unstack(-1).unstack(-1)
     df.columns = ['today sensor 1', 'today sensor 2', 'yesterday sensor 1', 'yesterday sensor 2']
-    ax = df.plot(style = ['bs-','ro-','b:','r:'])
+    ax = df.plot(style = ['bs-','go-','b:','g:'])
     ax.set_title('Temperatures 6th Floor 5NC')
     ax.set_ylabel('Celsius')
     ax.set_xlabel('Time')
+    ax.axhline(y=max_limit, color='r', linestyle='-')
 
     ax.get_figure().savefig('chart.jpg')
     return df
 
 
 if __name__ == '__main__':
-    get_temp()
+    get_temp(28)
