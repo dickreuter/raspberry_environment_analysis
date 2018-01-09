@@ -8,7 +8,8 @@ Options:
   -h, --help     Show this screen.
 
 """
-
+import json
+import os
 import smtplib
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
@@ -32,27 +33,11 @@ def send_mail(args, alert):
     ]
 
     if args['--all']:
-        destination.extend(
-            [
-                'claudio.nucera@barclays.com',
-                'alan.j.james@barclays.com',
-                'dimitris.kehagias@barclays.com',
-                'dionisis.gonos@barclays.com',
-                'Nora.bellavics@barclays.com',
-                'Lynda.cairns@barclays.com',
-                'richard.jefferies@barclays.com',
-                'jeff.x.wood@barclays.com',
-                'sergey.kurshev@barclays.com',
-                'fotios.amaxopoulos@barclays.com',
-                'Ben.knapp@barclays.com',
-                'Mark.arnold@barclays.com',
-                'Ray.perrotte@barclays.com',
-                'Danielle.Toohey@barclays.com',
-                'Yiran.Cui@barclays.com',
-                'Maria.x.Makarova@barclays.com'
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        with open(os.path.join(dir_path,'contacts.json')) as json_data:
+            d = json.load(json_data)
+            destination.extend(d)
 
-            ]
-        )
 
     # Create the container (outer) email message.
     msg = MIMEMultipart()
