@@ -7,7 +7,7 @@ import pandas as pd
 from temp_analyzer.mongo_manager import MongoManager
 
 
-def get_temp(max_limit):
+def get_temp(min_limit, max_limit):
     m = MongoManager()
     df_today, df_yesterday = m.get_temp_df()
     df_today['day'] = 'today'
@@ -22,10 +22,11 @@ def get_temp(max_limit):
     ax.set_ylabel('Celsius')
     ax.set_xlabel('Time')
     ax.axhline(y=max_limit, color='r', linestyle='-')
+    ax.axhline(y=min_limit, color='b', linestyle='-')
 
     ax.get_figure().savefig('chart.jpg')
     return df
 
 
 if __name__ == '__main__':
-    get_temp(28)
+    get_temp(21.5, 28)

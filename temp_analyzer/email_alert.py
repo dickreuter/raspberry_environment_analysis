@@ -3,8 +3,9 @@ Usage:
   email_alert.py LIMIT [options]
 
 Options:
-  -a,--all      send to all
+  -a,--all       send to all
   -f, --force    always send
+  -n, --any      send if any temperature today surprassed the max not just the last
   -h, --help     Show this screen.
 
 """
@@ -82,12 +83,16 @@ if __name__ == '__main__':
     threshold_max = float(args['LIMIT'])
     threshold_min = 21.5
 
-    df = get_temp(threshold_max)
+    df = get_temp(threshold_min, threshold_max)
     max_val = np.nanmax(df[['today sensor 1', 'today sensor 2']].values)
     min_val = np.nanmin(df[['today sensor 1', 'today sensor 2']].values)
     last_vals = df[['today sensor 1', 'today sensor 2']].dropna()[-1:].values
 
     alert = np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min
+
+    if args['--any']:
+        alert = max_val >= threshold_max or min_val <= threshold_min
+
 
     if alert or args['--force']:
         print('Sending...')
