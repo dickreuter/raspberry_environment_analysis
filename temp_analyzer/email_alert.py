@@ -35,10 +35,9 @@ def send_mail(args, alert):
 
     if args['--all']:
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(dir_path,'contacts.json')) as json_data:
+        with open(os.path.join(dir_path, 'contacts.json')) as json_data:
             d = json.load(json_data)
             destination.extend(d)
-
 
     # Create the container (outer) email message.
     msg = MIMEMultipart()
@@ -90,11 +89,11 @@ if __name__ == '__main__':
 
     alert = np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min
 
+    any_alert = False
     if args['--any']:
-        alert = max_val >= threshold_max or min_val <= threshold_min
+        any_alert = max_val >= threshold_max or min_val <= threshold_min
 
-
-    if alert or args['--force']:
+    if alert or args['--force'] or (args['--any'] and any_alert):
         print('Sending...')
         send_mail(args, alert)
 
