@@ -52,11 +52,12 @@ def send_mail(args, alert):
     msg.preamble = 'Temperature report'
 
     # We reference the image in the IMG SRC attribute by the ID we give it below
-    msgText = MIMEText('Please find attached the latest temperature report..'
-                       'Please open the attached file.<br><br>'
+    msgText = MIMEText('Please find attached the latest temperature report.'
+                       '<br><br>'
                        'Today max: {} C'
-                       '<br>Today min: {} C'.format("%.2f" % max_val, "%.2f" % min_val),
-                       'html')
+                       '<br>Today min: {} C'
+                       '<BR> <BR> To contribute please fork: https://github.com/dickreuter/raspberry_environment_analysis'
+                       .format("%.2f" % max_val, "%.2f" % min_val), 'html')
     msg.attach(msgText)
 
     # This example assumes the image is in the current directory
