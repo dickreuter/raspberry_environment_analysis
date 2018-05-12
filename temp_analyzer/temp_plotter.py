@@ -1,15 +1,15 @@
 import matplotlib
-matplotlib.use('Agg')
+from sys import platform
+if platform == "linux" or platform == "linux2":
+    matplotlib.use('Agg')
 import pandas as pd
-
-
 
 from temp_analyzer.mongo_manager import MongoManager
 
 
 def get_temp(min_limit, max_limit):
     m = MongoManager()
-    df_today, df_yesterday = m.get_temp_df()
+    df_today, df_yesterday = m.get_temp_for_plotting()
     df_today['day'] = 'today'
     df_yesterday['day'] = 'yesterday'
     df = pd.concat([df_today, df_yesterday])
@@ -17,7 +17,7 @@ def get_temp(min_limit, max_limit):
     df = df.set_index(['timestamp', 'port', 'day'])
     df = df.unstack(-1).unstack(-1)
     df.columns = ['today sensor 1', 'today sensor 2', 'yesterday sensor 1', 'yesterday sensor 2']
-    ax = df.plot(style = ['bs-','go-','b:','g:'])
+    ax = df.plot(style=['bs-', 'go-', 'b:', 'g:'])
     ax.set_title('Temperatures 6th Floor 5NC')
     ax.set_ylabel('Celsius')
     ax.set_xlabel('Time')

@@ -1,6 +1,9 @@
 """
 Usage:
-  email_alert.py LIMIT [options]
+  app.py email LIMIT [options]
+  app.py predict
+  app.py train
+  app.py email_predict LIMIT [options]
 
 Options:
   -a,--all       send to all
@@ -12,6 +15,7 @@ Options:
 import json
 import os
 import smtplib
+import sys
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -19,6 +23,7 @@ from email.mime.text import MIMEText
 import numpy as np
 from docopt import docopt
 
+from temp_analyzer.predictions.predictions import PredictRNN, predict
 from temp_analyzer.temp_plotter import get_temp
 
 me = email = '6thFloorTemperature@gmx.com'
@@ -41,10 +46,12 @@ def send_mail(args, alert):
 
     # Create the container (outer) email message.
     msg = MIMEMultipart()
-    if alert:
+    if alert==True:
         msg['Subject'] = 'Temperature ALERT 6th floor - action required'
-    else:
+    elif alert==False:
         msg['Subject'] = 'Temperature report 6th floor'
+    elif alert=='prediction':
+        msg['Subject'] = 'Temperature report 6th floor - neural network prediction alert'
     # me == the sender's email address
     # family = the list of all recipients' email addresses
     msg['From'] = email
@@ -80,23 +87,35 @@ def send_mail(args, alert):
 
 if __name__ == '__main__':
     args = docopt(__doc__)
-    threshold_max = float(args['LIMIT'])
-    threshold_min = 21
 
-    df = get_temp(threshold_min, threshold_max)
-    max_val = np.nanmax(df[['today sensor 1', 'today sensor 2']].values)
-    min_val = np.nanmin(df[['today sensor 1', 'today sensor 2']].values)
-    last_vals = df[['today sensor 1', 'today sensor 2']].dropna()[-1:].values
+    if args['train']:
+        p = PredictRNN()
+        p.train()
+        sys.exit()
 
-    alert = np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min
+    if args['predict']:
+        prediction = predict()
+        print(prediction)
+        sys.exit()
 
-    any_alert = False
-    if args['--any']:
-        any_alert = max_val >= threshold_max or min_val <= threshold_min
+    if args['email']:
+        threshold_max = float(args['LIMIT'])
+        threshold_min = 20.5
 
-    if alert or args['--force'] or (args['--any'] and any_alert):
-        print('Sending...')
-        send_mail(args, alert)
+        df = get_temp(threshold_min, threshold_max)
+        max_val = np.nanmax(df[['today sensor 1', 'today sensor 2']].values)
+        min_val = np.nanmin(df[['today sensor 1', 'today sensor 2']].values)
+        last_vals = df[['today sensor 1', 'today sensor 2']].dropna()[-1:].values
 
-    else:
-        print('Not above threshold.')
+        alert = np.nanmax(last_vals) >= threshold_max or np.nanmin(last_vals) <= threshold_min
+
+        any_alert = False
+        if args['--any']:
+            any_alert = max_val >= threshold_max or min_val <= threshold_min
+
+        if alert or args['--force'] or (args['--any'] and any_alert):
+            print('Sending...')
+            send_mail(args, alert)
+
+        else:
+            print('Not above threshold.')

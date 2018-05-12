@@ -1,11 +1,11 @@
 import time
-
-import pigpio
 from datetime import datetime
 
-from DHT22 import Sensor
 import RPi.GPIO as GPIO
-from mongo_manager import MongoManager
+import pigpio
+
+from sensor_reader.DHT22 import Sensor
+from sensor_reader.mongo_manager import MongoManager
 
 
 def flash():
@@ -25,9 +25,8 @@ def flash():
     print("Off")
 
 
-
 def read_and_store_temperature_from_dht(port):
-# Intervals of about 2 seconds or less will eventually hang the DHT22.
+    # Intervals of about 2 seconds or less will eventually hang the DHT22.
     INTERVAL = 3
     pi = pigpio.pi()
     s = Sensor(pi, port, LED=16, power=8)
@@ -41,10 +40,11 @@ def read_and_store_temperature_from_dht(port):
     time.sleep(3)
     print("x")
 
-    print("r: {}  Humidity: {}  Temperature: {} staleness: {:3.2f}  bad_checksum: {}  short_message: {}  missing_message:  {} sensor_resets: {}".format(
-        r, s.humidity(), s.temperature(), s.staleness(),
-        s.bad_checksum(), s.short_message(), s.missing_message(),
-        s.sensor_resets()))
+    print(
+        "r: {}  Humidity: {}  Temperature: {} staleness: {:3.2f}  bad_checksum: {}  short_message: {}  missing_message:  {} sensor_resets: {}".format(
+            r, s.humidity(), s.temperature(), s.staleness(),
+            s.bad_checksum(), s.short_message(), s.missing_message(),
+            s.sensor_resets()))
 
     next_reading += INTERVAL
     m = MongoManager()
@@ -64,9 +64,9 @@ def read_and_store_temperature_from_dht(port):
     pi.stop()
     time.sleep(10)
 
-if __name__ == '__main__':
 
-    read_and_store_temperature_from_dht(port = 22)
-    read_and_store_temperature_from_dht(port = 6)
+if __name__ == '__main__':
+    read_and_store_temperature_from_dht(port=22)
+    read_and_store_temperature_from_dht(port=6)
     flash()
     time.sleep(10)
