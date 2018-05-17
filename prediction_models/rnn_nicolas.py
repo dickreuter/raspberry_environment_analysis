@@ -3,10 +3,11 @@ import logging
 import math
 import os
 import time
+from sys import platform
 
 import matplotlib
 import pandas as pd
-from sys import platform
+
 if platform == "linux" or platform == "linux2":
     matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 path = os.path.dirname(os.path.realpath(__file__))
-look_back = 10
+look_back = 48
 look_ahead = 4
 
 
@@ -126,8 +127,8 @@ class PredictRNN(NeuralNetworkBase):
     def train(self, batchsize=1):
         np.random.seed(7)
         # load the dataset
-        self.load_dataset_from_csv()
-        # self.load_dataset()
+        # self.load_dataset_from_csv()
+        self.load_dataset()
 
         # normalize the dataset
         dataset = self.normalize_data(self.ts)
@@ -150,86 +151,6 @@ class PredictRNN(NeuralNetworkBase):
         self.model.add(LSTM(4, input_shape=(1, look_back)))
         self.model.add(Dense(1))
         self.model.compile(loss='mean_squared_error', optimizer='adam')
-        self.model.fit(trainX, trainY,
-                       epochs=100,
-                       batch_size=batchsize, verbose=1,
-                       callbacks=[self.tbCallBack,
-                                  self.early_stop])
-
-        # make predictions
-        trainPredict = self.model.predict(trainX)
-        testPredict = self.model.predict(testX)
-
-        # invert normailzation of predictions
-        trainPredict = self.scaler.inverse_transform(trainPredict)
-        trainY = self.scaler.inverse_transform([trainY])
-        testPredict = self.scaler.inverse_transform(testPredict)
-        testY = self.scaler.inverse_transform([testY])
-
-        # calculate root mean squared error
-        trainScore = math.sqrt(mean_squared_error(trainY[0], trainPredict[:, 0]))
-        print('Train Score: %.2f RMSE' % (trainScore))
-        testScore = math.sqrt(mean_squared_error(testY[0], testPredict[:, 0]))
-        print('Test Score: %.2f RMSE' % (testScore))
-
-        # shift train predictions for plotting
-        x_axis = range(len(trainY.reshape(-1)))
-        actual, = plt.plot(x_axis, trainY.reshape(-1), 'g')
-        predictions, = plt.plot(x_axis, trainPredict.reshape(-1), 'r')
-        plt.legend([actual, predictions], ['Train Actual', 'Train Prediction'])
-        plt.show()
-
-        # shift train predictions for plotting
-        x_axis = range(len(testY.reshape(-1)))
-        actual, = plt.plot(x_axis, testY.reshape(-1), 'g')
-        predictions, = plt.plot(x_axis, testPredict.reshape(-1), 'r')
-        plt.legend([actual, predictions], ['Test Actual', 'Test Prediction'])
-        plt.show()
-        self.save_model()
-        self.save_hyperparams(batchsize, self.norm)
-
-    def create_dataset(self, dataset, look_back=1, look_ahead=1):
-        dataset = dataset.reshape(-1)
-        shape = dataset.shape[:-1] + (dataset.shape[-1] - look_back + 1, look_back)
-        strides = dataset.strides + (dataset.strides[-1],)
-        self.X = np.lib.stride_tricks.as_strided(dataset, shape=shape, strides=strides)[0:-look_ahead]
-        self.Y = dataset[look_back + look_ahead - 1:]
-
-        return self.X, self.Y
-
-
-
-class PredictBinary(NeuralNetworkBase):
-    def train(self, batchsize=1):
-        np.random.seed(7)
-        # load the dataset
-        self.load_dataset_from_csv()
-        # self.load_dataset()
-
-        # normalize the dataset
-        dataset = self.normalize_data(self.ts)
-        # dataset = self.ts
-
-        # split into train and test sets
-        train_size = int(len(dataset) * 0.67)
-        train, test = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
-
-        # reshape into X=t and Y=t+1
-        trainX, trainY = self.create_dataset(train, look_back, look_ahead)
-        testX, testY = self.create_dataset(test, look_back, look_ahead)
-
-        # reshape input to be [samples, time steps, features]
-        trainX = np.reshape(trainX, (trainX.shape[0], 1, trainX.shape[1]))
-        testX = np.reshape(testX, (testX.shape[0], 1, testX.shape[1]))
-
-        # create and fit the neural network
-        self.model = Sequential()
-        self.model.add(Dense(hidden_neurons, activation='relu', input_shape=(input_neurons,)))
-        self.model.add(Dropout(0.2))
-        self.model.add(Dense(hidden_neurons, activation='relu', input_shape=(input_neurons,)))
-        self.model.add(Dropout(0.2))
-        self.model.add(Dense(output_neurons, activation='sigmoid'))
-
         self.model.fit(trainX, trainY,
                        epochs=100,
                        batch_size=batchsize, verbose=1,

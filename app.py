@@ -23,7 +23,7 @@ from email.mime.text import MIMEText
 import numpy as np
 from docopt import docopt
 
-from temp_analyzer.predictions.predictions import PredictRNN, predict
+from prediction_models.rnn_nicolas import PredictRNN, predict
 from temp_analyzer.temp_plotter import get_temp
 
 me = email = '6thFloorTemperature@gmx.com'
