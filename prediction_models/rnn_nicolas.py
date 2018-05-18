@@ -59,7 +59,8 @@ class NeuralNetworkBase():
         self.ts = m.get_temp_for_prediction(999999999, 22)
 
     def load_dataset_from_csv(self):
-        df = pd.read_csv('c:/temp/temperatures.csv')
+        dirpath = os.path.dirname(os.path.realpath(__file__))
+        df = pd.read_csv(os.path.join(dirpath, 'temperatures.csv'))
         df = df[df['port'] == 22]
         self.ts = df['temperature'].values.reshape(-1, 1)
 
@@ -127,8 +128,8 @@ class PredictRNN(NeuralNetworkBase):
     def train(self, batchsize=1):
         np.random.seed(7)
         # load the dataset
-        # self.load_dataset_from_csv()
-        self.load_dataset()
+        self.load_dataset_from_csv()
+        # self.load_dataset()
 
         # normalize the dataset
         dataset = self.normalize_data(self.ts)
@@ -214,9 +215,9 @@ if __name__ == '__main__':
     p = PredictRNN()
     p.train()
 
-    p.load_model(path)
-    input = np.array([20, 20, 20, 20, 20, 20, 21, 21, 21, 25]).reshape(-1, 1)
-    input_scaled = p.normalize_data(input)
-    prediction_scaled = p.predict(X=np.array(input_scaled).reshape(1, 1, look_back))
-    prediction = p.scaler.inverse_transform(prediction_scaled)
-    print(prediction)
+    # p.load_model(path)
+    # input = np.array([20, 20, 20, 20, 20, 20, 21, 21, 21, 25]).reshape(-1, 1)
+    # input_scaled = p.normalize_data(input)
+    # prediction_scaled = p.predict(X=np.array(input_scaled).reshape(1, 1, look_back))
+    # prediction = p.scaler.inverse_transform(prediction_scaled)
+    # print(prediction)
