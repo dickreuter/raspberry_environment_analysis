@@ -40,9 +40,11 @@ class MongoManager(object):
              {'$sort': {'timestamp': -1}},
              {'$limit': look_back},
              {'$sort': {'timestamp': 1}},
-             {'$project': {'temperature': 1}},
+             {'$project': {'temperature': 1, 'timestamp':1}},
 
              ])
         df = pd.DataFrame(list(data))
+        df['hour']=df['timestamp'].dt.hour
+        df['weekday']=df['timestamp'].dt.weekday
 
-        return df['temperature'].values.reshape(-1, 1)
+        return df[['temperature', 'hour', 'weekday']].values.reshape(-1, 3)

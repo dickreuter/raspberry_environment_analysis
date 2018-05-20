@@ -23,7 +23,7 @@ from email.mime.text import MIMEText
 import numpy as np
 from docopt import docopt
 
-from prediction_models.rnn_nicolas import PredictRNN, predict
+from prediction_models.rnn_nicolas import NeuralNetworkNicolas, predict
 from temp_analyzer.temp_plotter import get_temp
 
 me = email = '6thFloorTemperature@gmx.com'
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     args = docopt(__doc__)
 
     if args['train']:
-        p = PredictRNN()
+        p = NeuralNetworkNicolas()
         p.train()
         sys.exit()
 
