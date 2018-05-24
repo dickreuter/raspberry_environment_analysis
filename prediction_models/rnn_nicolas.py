@@ -25,11 +25,12 @@ logging.basicConfig()
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
 path = os.path.dirname(os.path.realpath(__file__))
-look_back = 48
+look_back = 100
 look_ahead = 4
 lstm = False
-batchsize = 10
+batchsize = 1
 normalize = True
+force_hour = 8
 
 
 class NeuralNetworkBase():
@@ -45,6 +46,7 @@ class NeuralNetworkBase():
         self.test_idx = None
 
         self.norm = None
+        self.norm2 = None
         self.train_payoff = None
         self.test_payoff = None
 
@@ -54,7 +56,7 @@ class NeuralNetworkBase():
                                       write_images=False)
 
         self.early_stop = EarlyStopping(monitor='val_loss',
-                                        min_delta=1e-7,
+                                        min_delta=1e-9,
                                         patience=3,
                                         verbose=2, mode='auto')
 
@@ -156,8 +158,9 @@ class NeuralNetworkNicolas(NeuralNetworkBase):
         train, test = dataset[0:train_size, :], dataset[train_size:len(dataset), :]
 
         # reshape into X=t and Y=t+1
-        trainX, trainY = create_dataset(train, look_back, look_ahead)
-        testX, testY = create_dataset(test, look_back, look_ahead)
+        force_hour_n = force_hour * self.norm['x_scale'][1] if normalize and force_hour else force_hour
+        trainX, trainY = create_dataset(train, look_back, look_ahead, force_hour_n)
+        testX, testY = create_dataset(test, look_back, look_ahead, force_hour_n  )
 
         # reshape input to be [samples, time steps, features]
         features = 3
@@ -180,8 +183,6 @@ class NeuralNetworkNicolas(NeuralNetworkBase):
         else:
             self.model = Sequential()
             self.model.add(Dense(50, activation='relu', input_shape=(look_back, features,)))
-            self.model.add(Dropout(0.2))
-            self.model.add(Dense(25))
             self.model.add(Dropout(0.2))
             self.model.add(Flatten())
             self.model.add(Dense(1))
@@ -240,13 +241,14 @@ class NeuralNetworkNicolas(NeuralNetworkBase):
 #     return self.X, self.Y
 
 
-def create_dataset(dataset, look_back=1, look_ahead=1):
+def create_dataset(dataset, look_back=1, look_ahead=1, force_hour=False):
     # convert an array of values into a dataset matrix
     dataX, dataY = [], []
     for i in range(len(dataset) - look_back - 1 - look_ahead):
         a = dataset[i:(i + look_back)]
-        dataX.append(a)
-        dataY.append(dataset[i + look_back + look_ahead, 0])
+        if a[-1, 1] == force_hour or force_hour == False:
+            dataX.append(a)
+            dataY.append(dataset[i + look_back + look_ahead, 0])
     return np.array(dataX), np.array(dataY)
 
 
