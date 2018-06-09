@@ -147,8 +147,8 @@ class NeuralNetworkNicolas(NeuralNetworkBase):
     def train(self):
         np.random.seed(7)
         # load the dataset
-        self.load_dataset_from_csv()
-        # self.load_dataset()
+        # self.load_dataset_from_csv()
+        self.load_dataset()
 
         # normalize the dataset
         dataset = self.normalize_data(self.ts) if normalize else self.ts

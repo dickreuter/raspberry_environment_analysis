@@ -1,5 +1,7 @@
-import matplotlib
 from sys import platform
+
+import matplotlib
+
 if platform == "linux" or platform == "linux2":
     matplotlib.use('Agg')
 import pandas as pd
@@ -17,7 +19,10 @@ def get_temp(min_limit, max_limit):
     df = df.set_index(['timestamp', 'port', 'day'])
     df = df.unstack(-1).unstack(-1)
     df.columns = ['today sensor 1', 'today sensor 2', 'yesterday sensor 1', 'yesterday sensor 2']
-    ax = df.plot(style=['bs-', 'go-', 'b:', 'g:'])
+    df = df.reset_index()
+    df = df.rename(columns={"timestamp": "hour"})
+    ax = df.plot(xticks=df.index, style=['bs-', 'go-', 'b:', 'g:'])
+    ax.set_xticklabels(df["hour"]);
     ax.set_title('Temperatures 6th Floor 5NC')
     ax.set_ylabel('Celsius')
     ax.set_xlabel('Time')
