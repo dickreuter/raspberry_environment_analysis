@@ -26,7 +26,7 @@ from docopt import docopt
 from prediction_models.rnn_nicolas import NeuralNetworkNicolas, predict
 from temp_analyzer.temp_plotter import get_temp
 
-me = email = '6thFloorTemperature@gmx.com'
+me = email = '6thFloorTemperature@gmx.us'
 password = '6thFloorTemp'
 
 POP3 = 'pop.gmx.com'
