@@ -1,0 +1,13 @@
+pandas
+pytest
+pylint
+pydocstyle
+gym
+numpy
+matplotlib
+pyglet
+keras
+keras-rl
+docopt
+tensorflow
+pymongo
