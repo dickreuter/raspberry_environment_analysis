@@ -35,7 +35,7 @@ SMTP = 'mail.gmx.com'
 
 def send_mail(args, alert):
     destination = [
-        'nicolas.dickreuter@barclays.com',
+        'dickreuter@gmail.com',
     ]
 
     if args['--all']:
