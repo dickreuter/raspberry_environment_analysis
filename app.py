@@ -63,7 +63,8 @@ def send_mail(args, alert):
                        '<br><br>'
                        'Today max: {} C'
                        '<br>Today min: {} C'
-                       '<BR> <BR> To contribute please fork: https://github.com/dickreuter/raspberry_environment_analysis'
+                       '<BR> <BR> <BR> To contribute please the raspberry_environment_analysis repo on github and create a pull request.'
+                       'https://github.com/dickreuter/raspberry_environment_analysis'
                        .format("%.2f" % max_val, "%.2f" % min_val), 'html')
     msg.attach(msgText)
 
